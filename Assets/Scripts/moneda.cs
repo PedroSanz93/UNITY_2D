@@ -5,6 +5,7 @@ using UnityEngine;
 public class Moneda : MonoBehaviour
 {
     public Puntuacion puntuacion; // Referencia al script de puntuación
+    public AudioClip sonidoMoneda; // El sonido que quieres reproducir
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -12,6 +13,12 @@ public class Moneda : MonoBehaviour
 
         // Incrementa la puntuación total en 1
         puntuacion.totalPuntuacion += 1;
+
+        // Reproduce el sonido de la moneda
+     
+        
+            AudioSource.PlayClipAtPoint(sonidoMoneda, transform.position);
+        
 
         // Destruye el objeto de la moneda
         Destroy(gameObject);

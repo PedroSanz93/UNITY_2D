@@ -18,6 +18,7 @@ public class movimientolateral : MonoBehaviour
     public int jumpCount = 0;
     public int maxJumpCount = 2; // Número máximo de saltos permitidos
     Animator animator;
+    public vidas vida;
 
     private bool isGrounded = false;
 
@@ -26,17 +27,27 @@ public class movimientolateral : MonoBehaviour
         rigidBody = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>(); // sonido
     }
 
     private void Update()
     {
         ProcessingMovement();
         ProcessingJump();
+        CheckLives();
     }
 
     private void FixedUpdate()
     {
         isOnFloor = CheckingFloor();
+
+        // Verificar la posición en el eje Y y volver al inicio si es necesario
+        if (transform.position.y <= -6.30f)
+        {
+            transform.position = initialPosition;
+            vidasRestantes--;            
+            vida.totalVidas = vidasRestantes;
+        }
     }
 
     bool CheckingFloor()
@@ -75,6 +86,9 @@ public class movimientolateral : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+
+            audioSource.PlayOneShot(saltoClip);// SONIDO SALTO
+
             if (isOnFloor || jumpCount < maxJumpCount)
             {
                 if (isOnFloor) // Solo resetea el contador de saltos cuando toca el suelo por primera vez después de un salto
@@ -89,12 +103,31 @@ public class movimientolateral : MonoBehaviour
         }
     }
 
+    // SONIDO
+    private AudioSource audioSource;
+    public AudioClip saltoClip;
 
+    // Variables para el sistema de vidas
+    public int vidasRestantes = 5;
+    public GameObject gameOverImage;
 
-    public void muertepj()
+    void CheckLives()
     {
-        transform.localPosition = initialPosition;
-}
+        if (!isOnFloor) // Si el jugador no está en el suelo
+        {
+            
+
+            Debug.Log("Vidas restantes: " + vidasRestantes); // Depurar el número de vidas restantes
+
+            if (vidasRestantes <= 0) // Si no quedan vidas
+            {
+                // Mostrar imagen de game over
+                gameOverImage.SetActive(true);
+                // Deshabilitar el movimiento del jugador
+                GetComponent<movimientolateral>().enabled = false;
+            }
+        }
+    }
 
 
 }
